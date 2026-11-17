@@ -3,8 +3,8 @@ export default function Home() {
     <>
       <h1 className="mb-4 text-5xl font-light">Welcome</h1>
       <p>
-        Feel free to explore the content, including my About page,
-        Ghibli-themed tree, and wish list.
+        Feel free to explore the content, including my About page
+        and wish list.
       </p>
     </>
   );
