@@ -33,10 +33,14 @@ export function activeFilter(remembered: string | null | undefined, options: Fil
   return options.some((o) => o.id === remembered) ? remembered! : "all";
 }
 
+// A One-off Wish with a Claim. Recurring Wishes are never taken.
+export function isTaken(wish: Wish, claims: Claim[]): boolean {
+  return wish.kind === "one_off" && claims.length > 0;
+}
+
 export function matchesFilter(filter: string, wish: Wish, claims: Claim[]): boolean {
   if (filter === "priority") return wish.is_priority;
-  // Recurring Wishes are never taken.
-  if (filter === "available") return wish.kind === "recurring" || claims.length === 0;
+  if (filter === "available") return !isTaken(wish, claims);
   if (filter.startsWith(CATEGORY)) {
     return wish.category?.toLowerCase() === filter.slice(CATEGORY.length).toLowerCase();
   }

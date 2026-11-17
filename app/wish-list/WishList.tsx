@@ -8,6 +8,8 @@ import { cancelClaim, createClaim, markBought } from "./claims";
 import FilterPills from "./FilterPills";
 import { activeFilter, filterOptions, matchesFilter } from "./filters";
 import PersonalMessage from "./PersonalMessage";
+import { activeSort, DEFAULT_SORT, sortWishes } from "./sorting";
+import SortSelect from "./SortSelect";
 import SpoilerWarning from "./SpoilerWarning";
 import type { Claim, Wish } from "./types";
 import WishCard from "./WishCard";
@@ -42,6 +44,7 @@ export default function WishList() {
   const [ownerShowsClaims, setOwnerShowsClaims] = useLocalStorage("spoiler-mode");
   const [guestName, setGuestName] = useLocalStorage("guest-name");
   const [rememberedFilter, setFilter] = useLocalStorage("wish-filter");
+  const [rememberedSort, setSort] = useLocalStorage("wish-sort");
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,7 +75,13 @@ export default function WishList() {
   const claimsFor = (wishId: string) => data?.claims.filter((c) => c.wish_id === wishId) ?? [];
   const options = filterOptions(data?.wishes ?? [], showClaims);
   const filter = activeFilter(rememberedFilter, options);
-  const shown = data?.wishes.filter((wish) => matchesFilter(filter, wish, claimsFor(wish.id))) ?? [];
+  const sort = activeSort(rememberedSort);
+  const shown = sortWishes(
+    data?.wishes.filter((wish) => matchesFilter(filter, wish, claimsFor(wish.id))) ?? [],
+    sort,
+    claimsFor,
+    showClaims,
+  );
 
   // Runs a Claim change, then reloads so the page matches the database (which
   // may have refused it, e.g. someone else claimed the Wish a moment earlier).
@@ -112,9 +121,12 @@ export default function WishList() {
         <p className="opacity-70">No Wishes yet.</p>
       ) : (
         <>
-          {options.length > 1 && (
-            <FilterPills options={options} active={filter} onChange={(id) => setFilter(id === "all" ? null : id)} />
-          )}
+          <div className="mb-6 flex flex-wrap items-center gap-4">
+            {options.length > 1 && (
+              <FilterPills options={options} active={filter} onChange={(id) => setFilter(id === "all" ? null : id)} />
+            )}
+            <SortSelect active={sort} onChange={(id) => setSort(id === DEFAULT_SORT ? null : id)} />
+          </div>
           {shown.length === 0 && <p className="opacity-70">No Wishes match this filter.</p>}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((wish) => (

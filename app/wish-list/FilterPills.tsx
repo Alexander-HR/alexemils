@@ -13,7 +13,7 @@ export default function FilterPills({
   onChange: (id: string) => void;
 }) {
   return (
-    <div role="group" aria-label="Filter Wishes" className="mb-6 flex flex-wrap gap-2">
+    <div role="group" aria-label="Filter Wishes" className="flex flex-wrap gap-2">
       {options.map((option) => {
         const selected = option.id === active;
         return (
