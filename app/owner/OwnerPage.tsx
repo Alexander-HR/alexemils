@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useAccount } from "@/utils/supabase/useAccount";
 import { useLocalStorage } from "@/utils/useLocalStorage";
+import { categoriesOf } from "../wish-list/filters";
 import type { Claim, Wish } from "../wish-list/types";
 import InviteForm from "./InviteForm";
 import WishForm, { type WishInput } from "./WishForm";
@@ -78,6 +79,7 @@ export default function OwnerPage() {
   const active = data?.wishes.filter((w) => !w.received_at) ?? [];
   const received = data?.wishes.filter((w) => w.received_at) ?? [];
   const claimsFor = (wishId: string) => data?.claims.filter((c) => c.wish_id === wishId) ?? [];
+  const categories = categoriesOf(data?.wishes ?? []);
 
   return (
     <div className="flex flex-col gap-10 pb-10">
@@ -98,6 +100,7 @@ export default function OwnerPage() {
       <section className="rounded-lg bg-surface p-4">
         <h2 className="mb-4 text-2xl">Add a Wish</h2>
         <WishForm
+          categories={categories}
           submitLabel="Add Wish"
           onSubmit={(wish) => act(async () => check(await supabase.from("wishes").insert(wish)))}
         />
@@ -116,6 +119,7 @@ export default function OwnerPage() {
                   {editingId === wish.id ? (
                     <WishForm
                       initial={wish}
+                      categories={categories}
                       submitLabel="Save"
                       onCancel={() => setEditingId(null)}
                       onSubmit={(changes: WishInput) =>
@@ -133,6 +137,9 @@ export default function OwnerPage() {
                           {wish.title}
                           {wish.kind === "recurring" && (
                             <span className="ml-2 text-sm opacity-60">Recurring</span>
+                          )}
+                          {wish.category && (
+                            <span className="ml-2 text-sm opacity-60">{wish.category}</span>
                           )}
                         </h3>
                         <div className="flex flex-wrap gap-2">

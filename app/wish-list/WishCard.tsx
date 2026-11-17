@@ -67,6 +67,11 @@ export default function WishCard(props: Props) {
               Where to buy
             </a>
           )}
+          {wish.category && (
+            <span className="rounded-full border border-foreground/30 px-2 py-0.5 text-xs christmas:border-edge">
+              {wish.category}
+            </span>
+          )}
           {wish.kind === "recurring" && <span>Can be given many times</span>}
         </div>
         <div className="mt-auto pt-3">

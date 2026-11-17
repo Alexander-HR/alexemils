@@ -34,6 +34,10 @@ _Avoid_: Repeatable, consumable, infinite wish
 A Wish the Owner has been given; it leaves the wishlist but is kept in the archive along with its Claims.
 _Avoid_: Done, completed, deleted
 
+**Category**:
+An optional label the Owner gives a Wish (e.g. Books, Kitchen) so Gifters can filter the wishlist by it. A Wish has at most one.
+_Avoid_: Tag, type, kind (that's One-off vs Recurring)
+
 ## Claiming
 
 **Claim**:

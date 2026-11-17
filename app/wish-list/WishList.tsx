@@ -5,6 +5,8 @@ import { createClient } from "@/utils/supabase/client";
 import { useAccount, useSessionUserId } from "@/utils/supabase/useAccount";
 import { useLocalStorage } from "@/utils/useLocalStorage";
 import { cancelClaim, createClaim, markBought } from "./claims";
+import FilterPills from "./FilterPills";
+import { activeFilter, filterOptions, matchesFilter } from "./filters";
 import PersonalMessage from "./PersonalMessage";
 import SpoilerWarning from "./SpoilerWarning";
 import type { Claim, Wish } from "./types";
@@ -17,7 +19,7 @@ async function fetchData(): Promise<Data> {
   const [wishes, claims] = await Promise.all([
     supabase
       .from("wishes")
-      .select("id, title, note, image_url, shop_url, price, is_priority, kind, created_at")
+      .select("id, title, note, image_url, shop_url, price, is_priority, category, kind, created_at")
       .is("received_at", null)
       .order("is_priority", { ascending: false })
       .order("created_at", { ascending: false }),
@@ -39,6 +41,7 @@ export default function WishList() {
   const [warningAccepted, setWarningAccepted] = useLocalStorage("spoiler-warning-accepted");
   const [ownerShowsClaims, setOwnerShowsClaims] = useLocalStorage("spoiler-mode");
   const [guestName, setGuestName] = useLocalStorage("guest-name");
+  const [rememberedFilter, setFilter] = useLocalStorage("wish-filter");
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +68,11 @@ export default function WishList() {
   const showClaims = !isOwner || ownerShowsClaims === "yes";
   const knownName =
     account.kind === "gifter" && account.displayName ? account.displayName : guestName ?? null;
+
+  const claimsFor = (wishId: string) => data?.claims.filter((c) => c.wish_id === wishId) ?? [];
+  const options = filterOptions(data?.wishes ?? [], showClaims);
+  const filter = activeFilter(rememberedFilter, options);
+  const shown = data?.wishes.filter((wish) => matchesFilter(filter, wish, claimsFor(wish.id))) ?? [];
 
   // Runs a Claim change, then reloads so the page matches the database (which
   // may have refused it, e.g. someone else claimed the Wish a moment earlier).
@@ -103,27 +111,33 @@ export default function WishList() {
       ) : data.wishes.length === 0 ? (
         <p className="opacity-70">No Wishes yet.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data.wishes.map((wish) => (
-            <WishCard
-              key={wish.id}
-              wish={wish}
-              claims={data.claims.filter((c) => c.wish_id === wish.id)}
-              showClaims={showClaims}
-              canClaim={!isOwner}
-              myUserId={myUserId}
-              knownName={knownName}
-              onClaim={(wishId, name) =>
-                act(async () => {
-                  if (account.kind === "logged-out") setGuestName(name);
-                  await createClaim(wishId, name);
-                })
-              }
-              onMarkBought={(claimId) => act(() => markBought(claimId))}
-              onCancel={(claimId) => act(() => cancelClaim(claimId))}
-            />
-          ))}
-        </div>
+        <>
+          {options.length > 1 && (
+            <FilterPills options={options} active={filter} onChange={(id) => setFilter(id === "all" ? null : id)} />
+          )}
+          {shown.length === 0 && <p className="opacity-70">No Wishes match this filter.</p>}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {shown.map((wish) => (
+              <WishCard
+                key={wish.id}
+                wish={wish}
+                claims={claimsFor(wish.id)}
+                showClaims={showClaims}
+                canClaim={!isOwner}
+                myUserId={myUserId}
+                knownName={knownName}
+                onClaim={(wishId, name) =>
+                  act(async () => {
+                    if (account.kind === "logged-out") setGuestName(name);
+                    await createClaim(wishId, name);
+                  })
+                }
+                onMarkBought={(claimId) => act(() => markBought(claimId))}
+                onCancel={(claimId) => act(() => cancelClaim(claimId))}
+              />
+            ))}
+          </div>
+        </>
       )}
     </>
   );

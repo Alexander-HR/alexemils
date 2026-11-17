@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Wish } from "../wish-list/types";
 
 export type WishInput = Pick<
   Wish,
-  "title" | "note" | "image_url" | "shop_url" | "price" | "is_priority" | "kind"
+  "title" | "note" | "image_url" | "shop_url" | "price" | "is_priority" | "category" | "kind"
 >;
 
 const input = "rounded bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-accent";
@@ -13,16 +13,20 @@ const input = "rounded bg-background px-3 py-2 outline-none focus:ring-2 focus:r
 // Add or edit a Wish. Empty optional fields are saved as null.
 export default function WishForm({
   initial,
+  categories,
   submitLabel,
   onSubmit,
   onCancel,
 }: {
   initial?: Wish;
+  // Categories already in use, suggested so spelling stays consistent.
+  categories: string[];
   submitLabel: string;
   onSubmit: (wish: WishInput) => Promise<void>;
   onCancel?: () => void;
 }) {
   const [pending, setPending] = useState(false);
+  const categoryListId = useId();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +42,7 @@ export default function WishForm({
         shop_url: text("shop_url"),
         price: text("price"),
         is_priority: form.get("is_priority") === "on",
+        category: text("category"),
         kind: form.get("kind") === "recurring" ? "recurring" : "one_off",
       });
       if (!initial) formElement.reset();
@@ -67,6 +72,22 @@ export default function WishForm({
       <label className="flex flex-col gap-1">
         Rough price
         <input name="price" placeholder="e.g. ~5.000 kr" defaultValue={initial?.price ?? ""} className={input} />
+      </label>
+      <label className="flex flex-col gap-1">
+        Category
+        <input
+          name="category"
+          list={categoryListId}
+          maxLength={40}
+          placeholder="e.g. Books"
+          defaultValue={initial?.category ?? ""}
+          className={input}
+        />
+        <datalist id={categoryListId}>
+          {categories.map((category) => (
+            <option key={category} value={category} />
+          ))}
+        </datalist>
       </label>
       <fieldset className="flex flex-col gap-1">
         <legend className="mb-1">Kind</legend>

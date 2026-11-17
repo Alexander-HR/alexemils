@@ -6,6 +6,7 @@ export type Wish = {
   shop_url: string | null;
   price: string | null;
   is_priority: boolean;
+  category: string | null;
   kind: "one_off" | "recurring";
   created_at: string;
 };

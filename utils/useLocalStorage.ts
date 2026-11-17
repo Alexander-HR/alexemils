@@ -2,7 +2,8 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-// Per-browser preferences (Spoiler Warning choice, Spoiler Mode, Guest name).
+// Per-browser preferences (Spoiler Warning choice, Spoiler Mode, Guest name,
+// wish list filter).
 // Storage can be unavailable (private mode, blocked cookies), so every access
 // is guarded and the value falls back to null.
 const EVENT = "local-storage";
