@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "./components/Navbar";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Snow />
         <Navbar />
         <main className="mx-auto w-full max-w-5xl px-4 mt-6">{children}</main>
+        <Analytics />
       </body>
     </html>
   );
