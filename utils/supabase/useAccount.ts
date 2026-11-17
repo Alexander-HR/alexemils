@@ -12,6 +12,21 @@ export type Account =
 
 type Profile = { userId: string; displayName: string; isOwner: boolean };
 
+// The Supabase user behind this browser, Guests included: used to tell which
+// Claims are "mine". null when there's no session yet.
+export function useSessionUserId(): string | null {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const { data } = createClient().auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user.id ?? null);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  return userId;
+}
+
 export function useAccount(): Account {
   // undefined = session not known yet, null = no account.
   const [userId, setUserId] = useState<string | null | undefined>(undefined);
