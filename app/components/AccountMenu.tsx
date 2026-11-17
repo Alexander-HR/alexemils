@@ -27,6 +27,11 @@ export default function AccountMenu() {
 
   return (
     <div className="flex items-center gap-3">
+      {account.kind === "owner" && (
+        <Link href="/owner" className="text-sm underline hover:opacity-80">
+          Manage
+        </Link>
+      )}
       <span className="text-lg">
         {account.displayName || "Logged in"}
         {account.kind === "owner" && (
