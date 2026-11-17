@@ -5,7 +5,7 @@ import type { Wish } from "../wish-list/types";
 
 export type WishInput = Pick<
   Wish,
-  "title" | "note" | "image_url" | "shop_url" | "price" | "is_priority" | "category" | "kind"
+  "title" | "note" | "image_url" | "shop_url" | "shop_name" | "price" | "is_priority" | "category" | "kind"
 >;
 
 const input = "rounded bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-accent";
@@ -40,6 +40,7 @@ export default function WishForm({
         note: text("note"),
         image_url: text("image_url"),
         shop_url: text("shop_url"),
+        shop_name: text("shop_name"),
         price: text("price"),
         is_priority: form.get("is_priority") === "on",
         category: text("category"),
@@ -68,6 +69,16 @@ export default function WishForm({
       <label className="flex flex-col gap-1">
         Shop link
         <input name="shop_url" type="url" defaultValue={initial?.shop_url ?? ""} className={input} />
+      </label>
+      <label className="flex flex-col gap-1">
+        Shop name
+        <input
+          name="shop_name"
+          maxLength={40}
+          placeholder="Leave blank to use the link's domain"
+          defaultValue={initial?.shop_name ?? ""}
+          className={input}
+        />
       </label>
       <label className="flex flex-col gap-1">
         Rough price

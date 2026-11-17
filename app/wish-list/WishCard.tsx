@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { type Shop, shopOf } from "./shop";
 import type { Claim, Wish } from "./types";
 
 type Props = {
@@ -20,11 +21,14 @@ type Props = {
 const button = "rounded px-3 py-1.5 text-sm disabled:cursor-not-allowed";
 const primary = `${button} bg-accent hover:opacity-90 disabled:bg-foreground/20 disabled:opacity-60`;
 const secondary = `${button} border border-foreground/70 hover:bg-foreground/10`;
+const pill =
+  "absolute bottom-2 left-2 z-10 max-w-[calc(100%-1rem)] truncate rounded-full bg-background/85 px-3 py-1.5 text-xs font-semibold christmas:border christmas:border-edge";
 
 export default function WishCard(props: Props) {
   const { wish, claims, showClaims } = props;
   // A taken One-off Wish, when the viewer is allowed to see that it's taken.
   const takenClaim = showClaims && wish.kind === "one_off" ? claims[0] : undefined;
+  const shop = shopOf(wish);
 
   return (
     <article className="flex flex-col overflow-hidden rounded-lg bg-surface christmas:rounded-2xl christmas:border christmas:border-edge christmas:p-3 christmas:shadow-sm">
@@ -42,6 +46,7 @@ export default function WishCard(props: Props) {
         ) : (
           <div className="h-48 bg-foreground/10 christmas:h-auto christmas:aspect-[4/3]" />
         )}
+        {shop && <ShopPill shop={shop} />}
         {takenClaim && (
           <div className="absolute inset-0 hidden items-center justify-center christmas:flex">
             <span className="rounded-full border border-edge bg-surface/95 px-3.5 py-1.5 text-xs font-semibold">
@@ -62,11 +67,6 @@ export default function WishCard(props: Props) {
         {wish.note && <p className="opacity-80">{wish.note}</p>}
         <div className="flex flex-wrap items-center gap-x-3 text-sm opacity-80">
           {wish.price && <span className="christmas:font-semibold christmas:text-highlight">{wish.price}</span>}
-          {wish.shop_url && (
-            <a href={wish.shop_url} target="_blank" rel="noreferrer" className="underline">
-              Where to buy
-            </a>
-          )}
           {wish.category && (
             <span className="rounded-full border border-foreground/30 px-2 py-0.5 text-xs christmas:border-edge">
               {wish.category}
@@ -79,6 +79,25 @@ export default function WishCard(props: Props) {
         </div>
       </div>
     </article>
+  );
+}
+
+// Which shop sells the Wish, on the card image. Links to the shop when there's a URL.
+function ShopPill({ shop }: { shop: Shop }) {
+  if (!shop.url) return <span className={pill}>{shop.name}</span>;
+  return (
+    <a
+      href={shop.url}
+      target="_blank"
+      rel="noreferrer"
+      title={`Where to buy: ${shop.name}`}
+      className={`${pill} hover:bg-background hover:underline`}
+    >
+      <span className="sr-only">Where to buy: </span>
+      {shop.name}
+      <span aria-hidden> ↗</span>
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
   );
 }
 

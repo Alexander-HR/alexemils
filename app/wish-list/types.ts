@@ -4,6 +4,7 @@ export type Wish = {
   note: string | null;
   image_url: string | null;
   shop_url: string | null;
+  shop_name: string | null;
   price: string | null;
   is_priority: boolean;
   category: string | null;

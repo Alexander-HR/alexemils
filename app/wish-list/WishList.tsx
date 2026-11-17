@@ -21,7 +21,7 @@ async function fetchData(): Promise<Data> {
   const [wishes, claims] = await Promise.all([
     supabase
       .from("wishes")
-      .select("id, title, note, image_url, shop_url, price, is_priority, category, kind, created_at")
+      .select("id, title, note, image_url, shop_url, shop_name, price, is_priority, category, kind, created_at")
       .is("received_at", null)
       .order("is_priority", { ascending: false })
       .order("created_at", { ascending: false }),
