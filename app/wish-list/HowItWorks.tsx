@@ -11,7 +11,7 @@ const STEPS = [
   },
   {
     title: "Coordinate",
-    text: "Everyone giving gifts can see who's getting what, so you can team up. Alexander never sees any of it on the wish list.",
+    text: "Everyone giving gifts can see who's getting what, so you can team up. I never see any of it on the wish list.",
   },
   {
     title: "Zero pressure",
