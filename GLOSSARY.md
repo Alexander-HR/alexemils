@@ -53,7 +53,7 @@ The state of a Claim where the Gifter has the gift in hand.
 _Avoid_: Purchased, done, fulfilled
 
 **Spoiler Mode**:
-The view in which Claims are visible; the Owner can turn it off to keep gifts a surprise.
+The Owner's choice to see Claims on the Owner page; off by default to keep gifts a surprise. The wishlist itself never shows Claims to the Owner.
 _Avoid_: Admin view, reveal mode
 
 **Spoiler Warning**:

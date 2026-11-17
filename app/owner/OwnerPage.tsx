@@ -37,7 +37,6 @@ const small = "rounded border border-foreground/70 px-2 py-1 text-sm hover:bg-fo
 
 export default function OwnerPage() {
   const account = useAccount();
-  // Same switch as on the Wish List, so one choice covers both pages.
   const [showClaimsPref, setShowClaimsPref] = useLocalStorage("spoiler-mode");
   const showClaims = showClaimsPref === "yes";
   const [data, setData] = useState<Data | null>(null);

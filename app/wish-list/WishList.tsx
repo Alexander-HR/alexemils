@@ -42,7 +42,6 @@ export default function WishList() {
   const account = useAccount();
   const myUserId = useSessionUserId();
   const [warningAccepted, setWarningAccepted] = useLocalStorage("spoiler-warning-accepted");
-  const [ownerShowsClaims, setOwnerShowsClaims] = useLocalStorage("spoiler-mode");
   const [guestName, setGuestName] = useLocalStorage("guest-name");
   const [rememberedFilter, setFilter] = useLocalStorage("wish-filter");
   const [rememberedSort, setSort] = useLocalStorage("wish-sort");
@@ -69,7 +68,8 @@ export default function WishList() {
   }
 
   const isOwner = account.kind === "owner";
-  const showClaims = !isOwner || ownerShowsClaims === "yes";
+  // The Owner never sees Claims here; Spoiler Mode lives on the Owner page.
+  const showClaims = !isOwner;
   const knownName =
     account.kind === "gifter" && account.displayName ? account.displayName : guestName ?? null;
 
@@ -98,19 +98,7 @@ export default function WishList() {
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-5xl font-light">This is my wishlist</h1>
-        {isOwner && (
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={showClaims}
-              onChange={(e) => setOwnerShowsClaims(e.target.checked ? "yes" : null)}
-            />
-            Show claims (spoilers!)
-          </label>
-        )}
-      </div>
+      <h1 className="mb-6 text-5xl font-light">This is my wishlist</h1>
 
       <PersonalMessage isOwner={isOwner} />
 

@@ -3,7 +3,7 @@
 import { useLocalStorage } from "@/utils/useLocalStorage";
 
 // Explains claiming as it really works: Gifters see each other's Claims, the
-// Owner only sees them in Spoiler Mode, and any Claim can be cancelled.
+// Owner never sees them on the wish list, and any Claim can be cancelled.
 const STEPS = [
   {
     title: "Reserve it",
@@ -11,7 +11,7 @@ const STEPS = [
   },
   {
     title: "Coordinate",
-    text: "Everyone giving gifts can see who's getting what, so you can team up. Alexander only sees it with \"Show claims (spoilers!)\" switched on, so the surprise is safe.",
+    text: "Everyone giving gifts can see who's getting what, so you can team up. Alexander never sees any of it on the wish list.",
   },
   {
     title: "Zero pressure",
