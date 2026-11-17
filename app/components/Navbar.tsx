@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import AccountMenu from "./AccountMenu";
 
 const links = [
   { href: "/", label: "Home" },
@@ -27,8 +28,7 @@ export default function Navbar() {
         >
           ☰
         </button>
-        {/* Login isn't built yet; it'll link to the login page in step 4. */}
-        <span className="text-lg">Login</span>
+        <AccountMenu />
       </nav>
 
       {/* Sidebar */}
