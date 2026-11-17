@@ -39,14 +39,18 @@
   --highlight: #dfb461;
 }
 
+/* On <html> too, so overscrolling past the page edge shows the same colour. */
+html,
 body {
   background: var(--background);
   color: var(--foreground);
 }
 
+/* The glow is drawn once over the first screen; left to repeat, it would
+   restart (as a lighter band) every screen height down a long page. */
 :root[data-theme="christmas"] body {
   background:
-    radial-gradient(ellipse at top, #16261c 0%, transparent 60%),
+    radial-gradient(ellipse at top, #16261c 0%, transparent 60%) top / 100% 100vh no-repeat,
     var(--background);
   font-family: var(--font-plus-jakarta-sans);
 }
