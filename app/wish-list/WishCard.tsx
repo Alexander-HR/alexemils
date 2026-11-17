@@ -22,21 +22,38 @@ const primary = `${button} bg-accent hover:opacity-90 disabled:bg-foreground/20 
 const secondary = `${button} border border-foreground/70 hover:bg-foreground/10`;
 
 export default function WishCard(props: Props) {
-  const { wish } = props;
+  const { wish, claims, showClaims } = props;
+  // A taken One-off Wish, when the viewer is allowed to see that it's taken.
+  const takenClaim = showClaims && wish.kind === "one_off" ? claims[0] : undefined;
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg bg-surface">
-      {wish.image_url ? (
-        // External URLs from anywhere, so a plain <img> rather than next/image.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={wish.image_url} alt="" className="h-48 w-full object-cover" />
-      ) : (
-        <div className="h-48 bg-foreground/10" />
-      )}
-      <div className="flex flex-1 flex-col gap-2 p-4">
+    <article className="flex flex-col overflow-hidden rounded-lg bg-surface christmas:rounded-2xl christmas:border christmas:border-edge christmas:p-3 christmas:shadow-sm">
+      <div className="relative christmas:overflow-hidden christmas:rounded-xl">
+        {wish.image_url ? (
+          // External URLs from anywhere, so a plain <img> rather than next/image.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={wish.image_url}
+            alt=""
+            className={`h-48 w-full object-cover christmas:h-auto christmas:aspect-[4/3] ${
+              takenClaim ? "christmas:opacity-40 christmas:grayscale-50" : ""
+            }`}
+          />
+        ) : (
+          <div className="h-48 bg-foreground/10 christmas:h-auto christmas:aspect-[4/3]" />
+        )}
+        {takenClaim && (
+          <div className="absolute inset-0 hidden items-center justify-center christmas:flex">
+            <span className="rounded-full border border-edge bg-surface/95 px-3.5 py-1.5 text-xs font-semibold">
+              {takenClaim.status === "bought" ? "Bought" : "Reserved"}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-4 christmas:px-1 christmas:pb-1">
         <h2 className="text-xl">
           {wish.is_priority && (
-            <span title="Really want this" className="mr-1 text-yellow-400">
+            <span title="Really want this" className="mr-1 text-yellow-400 christmas:text-highlight">
               ★
             </span>
           )}
@@ -44,7 +61,7 @@ export default function WishCard(props: Props) {
         </h2>
         {wish.note && <p className="opacity-80">{wish.note}</p>}
         <div className="flex flex-wrap items-center gap-x-3 text-sm opacity-80">
-          {wish.price && <span>{wish.price}</span>}
+          {wish.price && <span className="christmas:font-semibold christmas:text-highlight">{wish.price}</span>}
           {wish.shop_url && (
             <a href={wish.shop_url} target="_blank" rel="noreferrer" className="underline">
               Where to buy
