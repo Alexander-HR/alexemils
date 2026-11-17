@@ -7,6 +7,7 @@ import { useLocalStorage } from "@/utils/useLocalStorage";
 import { cancelClaim, createClaim, markBought } from "./claims";
 import FilterPills from "./FilterPills";
 import { activeFilter, filterOptions, matchesFilter } from "./filters";
+import HowItWorks from "./HowItWorks";
 import PersonalMessage from "./PersonalMessage";
 import { activeSort, DEFAULT_SORT, sortWishes } from "./sorting";
 import SortSelect from "./SortSelect";
@@ -112,6 +113,8 @@ export default function WishList() {
       </div>
 
       <PersonalMessage isOwner={isOwner} />
+
+      <HowItWorks />
 
       {error && <p className="mb-4 rounded bg-red-900/50 px-3 py-2">{error}</p>}
 
