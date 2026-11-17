@@ -9,5 +9,5 @@ The wishlist needs shared state (Claims) and logins, which a static GitHub Pages
 
 ## Consequences
 
-- The `alexander-hr.github.io` address is abandoned; the repo name no longer reflects where the site is hosted.
+- The `alexander-hr.github.io` address is abandoned and the repo was renamed to `alexemils`.
 - Supabase free-tier projects pause after a week of low database activity, which a rarely-visited family wishlist will hit. A daily Vercel cron runs a real query to keep it awake; if that ever stops working, unpausing by hand is acceptable.
