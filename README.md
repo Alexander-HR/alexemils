@@ -1,4 +1,4 @@
-# alexander-site
+# alexemils
 
 Personal site and family wishlist. Next.js + Tailwind, hosted on Vercel, with Supabase as the backend (see `docs/adr/`). Domain terms live in `GLOSSARY.md`.
 
