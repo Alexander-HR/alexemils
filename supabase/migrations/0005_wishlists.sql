@@ -25,6 +25,14 @@ select p.id, 'alexander', coalesce((select message from public.personal_message)
 from public.profiles p
 where p.is_owner;
 
+do $$
+begin
+  if not exists (select 1 from public.wishlists) then
+    raise exception 'No profile has is_owner set, so there is no Owner to give the "alexander" Wishlist to';
+  end if;
+end;
+$$;
+
 -- Being an Owner now means owning a Wishlist.
 create or replace function public.is_owner()
 returns boolean
@@ -50,6 +58,17 @@ as $$
   );
 $$;
 
+-- Wishes belong to a Wishlist ---------------------------------------------------
+
+alter table public.wishes
+  add column wishlist_id uuid references public.wishlists (id) on delete cascade;
+
+update public.wishes set wishlist_id = (select id from public.wishlists where handle = 'alexander');
+
+alter table public.wishes alter column wishlist_id set not null;
+
+create index wishes_wishlist_id on public.wishes (wishlist_id);
+
 -- Security definer so it also sees Received Wishes, which RLS hides.
 create function public.owns_wish(wish_id uuid)
 returns boolean
@@ -65,17 +84,6 @@ as $$
     where w.id = wish_id and l.owner_id = auth.uid()
   );
 $$;
-
--- Wishes belong to a Wishlist ---------------------------------------------------
-
-alter table public.wishes
-  add column wishlist_id uuid references public.wishlists (id) on delete cascade;
-
-update public.wishes set wishlist_id = (select id from public.wishlists where handle = 'alexander');
-
-alter table public.wishes alter column wishlist_id set not null;
-
-create index wishes_wishlist_id on public.wishes (wishlist_id);
 
 -- The old single-Owner bits ---------------------------------------------------
 
