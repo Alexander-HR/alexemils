@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Styles that apply only while the Christmas Theme is active, e.g. christmas:rounded-2xl. */
+@custom-variant christmas (&:where([data-theme="christmas"], [data-theme="christmas"] *));
+
 /* Standard Theme. Seasonal Themes (Christmas, Birthday) will override these tokens. */
 :root {
   --background: #212529;
@@ -7,6 +10,9 @@
   --surface: #2b3035;
   --navbar: #6c757d;
   --accent: #0d6efd;
+  /* Only used through the christmas: variant for now. */
+  --edge: transparent;
+  --highlight: #facc15;
 }
 
 @theme inline {
@@ -15,17 +21,22 @@
   --color-surface: var(--surface);
   --color-navbar: var(--navbar);
   --color-accent: var(--accent);
+  --color-edge: var(--edge);
+  --color-highlight: var(--highlight);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-/* Christmas Theme, 1 Dec – 6 Jan (chosen in app/theme.ts). */
+/* Christmas Theme, 1 Nov – 6 Jan (chosen in app/theme.ts): muted pine, cranberry
+   and candle gold, with serif headings. */
 :root[data-theme="christmas"] {
-  --background: #0f2a1d;
-  --foreground: #fdf6e3;
-  --surface: #17402c;
-  --navbar: #9b1c2c;
-  --accent: #c8102e;
+  --background: #0e1511;
+  --foreground: #e3ece4;
+  --surface: #141e18;
+  --navbar: #8b2e2e;
+  --accent: #8b2e2e;
+  --edge: #23332a;
+  --highlight: #dfb461;
 }
 
 body {
@@ -35,13 +46,19 @@ body {
 
 :root[data-theme="christmas"] body {
   background:
-    radial-gradient(ellipse at top, #1d5238 0%, transparent 60%),
+    radial-gradient(ellipse at top, #16261c 0%, transparent 60%),
     var(--background);
+  font-family: var(--font-plus-jakarta-sans);
 }
 
-/* A row of gold "fairy lights" under the navbar. */
+:root[data-theme="christmas"] :is(h1, h2, h3) {
+  font-family: var(--font-playfair-display);
+  font-weight: 600;
+}
+
+/* A thin line of gold "fairy lights" under the navbar. */
 :root[data-theme="christmas"] nav {
-  box-shadow: 0 3px 0 #d4af37;
+  box-shadow: 0 2px 0 rgb(223 180 97 / 0.5);
 }
 
 .snow {

@@ -61,3 +61,7 @@ _Avoid_: Popup, login prompt, gate
 **Theme**:
 The seasonal look of the site: Christmas, Birthday, or Standard in between.
 _Avoid_: Skin, style, mode
+
+**Personal Message**:
+A short message from the Owner shown under the wishlist heading, for everyone who visits.
+_Avoid_: Note (that's on a Wish), intro, bio

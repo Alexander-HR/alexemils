@@ -1,7 +1,7 @@
 // Falling snow for the Christmas Theme. Always rendered, shown only by CSS
 // when data-theme="christmas" (see globals.css). Positions are derived from
 // the index rather than Math.random() so server and client HTML match.
-const FLAKES = 40;
+const FLAKES = 24;
 
 export default function Snow() {
   return (
@@ -12,9 +12,9 @@ export default function Snow() {
           style={{
             left: `${(i * 37) % 100}%`,
             fontSize: `${8 + ((i * 7) % 10)}px`,
-            animationDuration: `${9 + ((i * 13) % 12)}s`,
-            animationDelay: `-${(i * 17) % 20}s`,
-            opacity: 0.4 + ((i * 3) % 6) / 10,
+            animationDuration: `${16 + ((i * 13) % 14)}s`,
+            animationDelay: `-${(i * 17) % 30}s`,
+            opacity: 0.2 + ((i * 3) % 4) / 10,
           }}
         >
           ❄

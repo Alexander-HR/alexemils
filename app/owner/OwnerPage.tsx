@@ -129,7 +129,7 @@ export default function OwnerPage() {
                     <>
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <h3 className="text-lg">
-                          {wish.is_priority && <span className="mr-1 text-yellow-400">★</span>}
+                          {wish.is_priority && <span className="mr-1 text-yellow-400 christmas:text-highlight">★</span>}
                           {wish.title}
                           {wish.kind === "recurring" && (
                             <span className="ml-2 text-sm opacity-60">Recurring</span>
