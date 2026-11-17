@@ -1,4 +1,8 @@
-# alexander-hr.github.io
+# alexander-site
 
+Personal site and family wishlist. Next.js + Tailwind, hosted on Vercel, with Supabase as the backend (see `docs/adr/`). Domain terms live in `GLOSSARY.md`.
 
-Just checking if I can change the README
+```sh
+npm install
+npm run dev   # http://localhost:3000
+```
