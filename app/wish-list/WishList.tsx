@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useAccount, useSessionUserId } from "@/utils/supabase/useAccount";
 import { useLocalStorage } from "@/utils/useLocalStorage";
 import { cancelClaim, createClaim, markBought } from "./claims";
+import PersonalMessage from "./PersonalMessage";
 import SpoilerWarning from "./SpoilerWarning";
 import type { Claim, Wish } from "./types";
 import WishCard from "./WishCard";
@@ -92,6 +93,8 @@ export default function WishList() {
           </label>
         )}
       </div>
+
+      <PersonalMessage isOwner={isOwner} />
 
       {error && <p className="mb-4 rounded bg-red-900/50 px-3 py-2">{error}</p>}
 
