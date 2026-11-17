@@ -20,3 +20,11 @@ export type Claim = {
   status: "reserved" | "bought";
   reset_at: string | null;
 };
+
+export type Wishlist = {
+  id: string;
+  handle: string;
+  personal_message: string;
+  owner_id: string;
+  owner_name: string;
+};

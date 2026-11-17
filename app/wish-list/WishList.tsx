@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { use, useCallback, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useAccount, useSessionUserId } from "@/utils/supabase/useAccount";
 import { useLocalStorage } from "@/utils/useLocalStorage";
@@ -12,33 +13,43 @@ import PersonalMessage from "./PersonalMessage";
 import { activeSort, DEFAULT_SORT, sortWishes } from "./sorting";
 import SortSelect from "./SortSelect";
 import SpoilerWarning from "./SpoilerWarning";
-import type { Claim, Wish } from "./types";
+import type { Claim, Wish, Wishlist } from "./types";
 import WishCard from "./WishCard";
+import { fetchWishlists, wishlistTitle } from "./wishlists";
 
-type Data = { wishes: Wish[]; claims: Claim[] };
+// wishlist is null when no Wishlist has this Handle.
+type Data = { wishlist: Wishlist | null; others: Wishlist[]; wishes: Wish[]; claims: Claim[] };
 
-async function fetchData(): Promise<Data> {
+async function fetchData(handle: string): Promise<Data> {
+  const all = await fetchWishlists();
+  const wishlist = all.find((w) => w.handle === handle) ?? null;
+  const others = all.filter((w) => w !== wishlist);
+  if (!wishlist) return { wishlist, others, wishes: [], claims: [] };
+
   const supabase = createClient();
   const [wishes, claims] = await Promise.all([
     supabase
       .from("wishes")
       .select("id, title, note, image_url, shop_url, shop_name, price, is_priority, category, kind, created_at")
+      .eq("wishlist_id", wishlist.id)
       .is("received_at", null)
       .order("is_priority", { ascending: false })
       .order("created_at", { ascending: false }),
     // Reset Claims only matter for the archive.
     supabase
       .from("claims")
-      .select("id, wish_id, claimer_id, claimer_name, status, reset_at")
+      .select("id, wish_id, claimer_id, claimer_name, status, reset_at, wishes!inner(wishlist_id)")
+      .eq("wishes.wishlist_id", wishlist.id)
       .is("reset_at", null)
       .order("created_at"),
   ]);
   if (wishes.error) throw new Error(wishes.error.message);
   if (claims.error) throw new Error(claims.error.message);
-  return { wishes: wishes.data, claims: claims.data };
+  return { wishlist, others, wishes: wishes.data, claims: claims.data };
 }
 
-export default function WishList() {
+export default function WishList({ handle: handlePromise }: { handle: Promise<string> }) {
+  const handle = use(handlePromise);
   const account = useAccount();
   const myUserId = useSessionUserId();
   const [warningAccepted, setWarningAccepted] = useLocalStorage("spoiler-warning-accepted");
@@ -50,8 +61,8 @@ export default function WishList() {
 
   const reload = useCallback(
     () =>
-      fetchData().then(setData, (e: Error) => setError(e.message)),
-    [],
+      fetchData(handle).then(setData, (e: Error) => setError(e.message)),
+    [handle],
   );
 
   useEffect(() => {
@@ -63,15 +74,34 @@ export default function WishList() {
 
   if (account.kind === "loading" || warningAccepted === undefined) return null;
 
-  if (account.kind === "logged-out" && warningAccepted !== "yes") {
-    return <SpoilerWarning onContinue={() => setWarningAccepted("yes")} />;
+  if (data && !data.wishlist) {
+    return (
+      <p>
+        There&apos;s no wish list here.{" "}
+        <Link href="/wish-list" className="underline">
+          See all wish lists
+        </Link>
+      </p>
+    );
   }
 
-  const isOwner = account.kind === "owner";
+  if (account.kind === "logged-out" && warningAccepted !== "yes") {
+    // The Owner's name isn't known until data loads; wait so the warning names them.
+    if (!data) return null;
+    return (
+      <SpoilerWarning
+        ownerName={data.wishlist!.owner_name}
+        onContinue={() => setWarningAccepted("yes")}
+      />
+    );
+  }
+
+  // Owner of *this* Wishlist; on anyone else's they're a Gifter.
+  const isOwner = account.kind === "owner" && account.handle === handle;
   // The Owner never sees Claims here; Spoiler Mode lives on the Owner page.
   const showClaims = !isOwner;
   const knownName =
-    account.kind === "gifter" && account.displayName ? account.displayName : guestName ?? null;
+    account.kind !== "logged-out" && account.displayName ? account.displayName : guestName ?? null;
 
   const claimsFor = (wishId: string) => data?.claims.filter((c) => c.wish_id === wishId) ?? [];
   const options = filterOptions(data?.wishes ?? [], showClaims);
@@ -98,9 +128,22 @@ export default function WishList() {
 
   return (
     <>
-      <h1 className="mb-6 text-5xl font-light">This is my wishlist</h1>
+      {data && data.others.length > 0 && (
+        <nav aria-label="Other wish lists" className="mb-4 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+          <span className="opacity-70">Other wish lists:</span>
+          {data.others.map((other) => (
+            <Link key={other.id} href={`/wish-list/${other.handle}`} className="underline hover:opacity-80">
+              {other.owner_name}
+            </Link>
+          ))}
+        </nav>
+      )}
 
-      <PersonalMessage isOwner={isOwner} />
+      <h1 className="mb-6 text-5xl font-light">
+        {data?.wishlist ? wishlistTitle(data.wishlist) : "Wish list"}
+      </h1>
+
+      {data?.wishlist && <PersonalMessage key={data.wishlist.id} wishlist={data.wishlist} isOwner={isOwner} />}
 
       <HowItWorks />
 

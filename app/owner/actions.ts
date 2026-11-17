@@ -15,7 +15,7 @@ export async function inviteGifter(_prev: InviteState, form: FormData): Promise<
   // The admin client bypasses row level security, so check the Owner here.
   const supabase = createClient(await cookies());
   const { data: isOwner } = await supabase.rpc("is_owner");
-  if (!isOwner) return { ok: false, message: "Only the Owner can invite people." };
+  if (!isOwner) return { ok: false, message: "Only Owners can invite people." };
 
   try {
     const admin = createAdminClient();

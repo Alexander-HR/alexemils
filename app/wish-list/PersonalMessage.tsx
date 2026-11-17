@@ -1,32 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import type { Wishlist } from "./types";
 
 const MAX_LENGTH = 500;
 
 // The Owner's Personal Message under the wishlist heading. The Owner edits it
 // in place; everyone else just reads it (and sees nothing when it's empty).
-export default function PersonalMessage({ isOwner }: { isOwner: boolean }) {
-  // null = not loaded yet.
-  const [saved, setSaved] = useState<string | null>(null);
-  const [draft, setDraft] = useState("");
+export default function PersonalMessage({ wishlist, isOwner }: { wishlist: Wishlist; isOwner: boolean }) {
+  const [saved, setSaved] = useState(wishlist.personal_message);
+  const [draft, setDraft] = useState(wishlist.personal_message);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    createClient()
-      .from("personal_message")
-      .select("message")
-      .maybeSingle()
-      .then(({ data, error }) => {
-        if (error) return setError(error.message);
-        setSaved(data?.message ?? "");
-        setDraft(data?.message ?? "");
-      });
-  }, []);
-
-  if (saved === null) return error && isOwner ? <p className="mb-6 text-sm text-red-400">{error}</p> : null;
 
   if (!isOwner) {
     return saved ? <p className="mb-6 max-w-2xl whitespace-pre-line opacity-80">{saved}</p> : null;
@@ -36,9 +22,9 @@ export default function PersonalMessage({ isOwner }: { isOwner: boolean }) {
     setSaving(true);
     setError(null);
     const { error } = await createClient()
-      .from("personal_message")
-      .update({ message: draft.trim(), updated_at: new Date().toISOString() })
-      .eq("id", true);
+      .from("wishlists")
+      .update({ personal_message: draft.trim() })
+      .eq("id", wishlist.id);
     setSaving(false);
     if (error) return setError(error.message);
     setSaved(draft.trim());

@@ -8,9 +8,11 @@ import { createClient } from "./client";
 export type Account =
   | { kind: "loading" }
   | { kind: "logged-out" }
-  | { kind: "owner" | "gifter"; userId: string; displayName: string };
+  | { kind: "owner"; userId: string; displayName: string; handle: string }
+  | { kind: "gifter"; userId: string; displayName: string };
 
-type Profile = { userId: string; displayName: string; isOwner: boolean };
+// handle is the Handle of the Wishlist they own, if any.
+type Profile = { userId: string; displayName: string; handle: string | null };
 
 // The Supabase user behind this browser, Guests included: used to tell which
 // Claims are "mine". null when there's no session yet.
@@ -48,7 +50,7 @@ export function useAccount(): Account {
     let cancelled = false;
     createClient()
       .from("profiles")
-      .select("display_name, is_owner")
+      .select("display_name, wishlists(handle)")
       .eq("id", userId)
       .maybeSingle()
       .then(({ data }) => {
@@ -56,7 +58,8 @@ export function useAccount(): Account {
         setProfile({
           userId,
           displayName: data?.display_name ?? "",
-          isOwner: data?.is_owner ?? false,
+          // One-to-one (owner_id is unique), so PostgREST returns an object, not an array.
+          handle: (data?.wishlists as unknown as { handle: string } | null)?.handle ?? null,
         });
       });
     return () => {
@@ -69,9 +72,8 @@ export function useAccount(): Account {
   if (profile?.userId !== userId) return { kind: "loading" };
   // An account without a profile wasn't invited; treat it as a Gifter with no
   // name rather than blocking them.
-  return {
-    kind: profile.isOwner ? "owner" : "gifter",
-    userId,
-    displayName: profile.displayName,
-  };
+  if (profile.handle) {
+    return { kind: "owner", userId, displayName: profile.displayName, handle: profile.handle };
+  }
+  return { kind: "gifter", userId, displayName: profile.displayName };
 }

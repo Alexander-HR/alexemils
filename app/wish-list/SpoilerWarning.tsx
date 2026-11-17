@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function SpoilerWarning({ onContinue }: { onContinue: () => void }) {
+export default function SpoilerWarning({
+  ownerName,
+  onContinue,
+}: {
+  ownerName: string;
+  onContinue: () => void;
+}) {
   const router = useRouter();
 
   return (
@@ -18,7 +24,7 @@ export default function SpoilerWarning({ onContinue }: { onContinue: () => void 
       </h2>
       <p className="mb-6 opacity-80">
         This page shows which gifts have already been claimed. If you&apos;re
-        Alexander, go back so you don&apos;t spoil the surprise!
+        {` ${ownerName}`}, go back so you don&apos;t spoil the surprise!
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <button

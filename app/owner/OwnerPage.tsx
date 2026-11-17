@@ -11,21 +11,31 @@ import InviteForm from "./InviteForm";
 import WishForm, { type WishInput } from "./WishForm";
 
 type OwnerWish = Wish & { received_at: string | null };
-type Data = { wishes: OwnerWish[]; claims: (Claim & { created_at: string })[] };
+type Data = { wishlistId: string; wishes: OwnerWish[]; claims: (Claim & { created_at: string })[] };
 
-async function fetchData(): Promise<Data> {
+// Only the Owner's own Wishlist: other people's active Wishes are readable too.
+async function fetchData(ownerId: string): Promise<Data> {
   const supabase = createClient();
+  const wishlist = await supabase.from("wishlists").select("id").eq("owner_id", ownerId).single();
+  if (wishlist.error) throw new Error(wishlist.error.message);
+  const wishlistId: string = wishlist.data.id;
+
   const [wishes, claims] = await Promise.all([
     supabase
       .from("wishes")
       .select("*")
+      .eq("wishlist_id", wishlistId)
       .order("is_priority", { ascending: false })
       .order("created_at", { ascending: false }),
-    supabase.from("claims").select("*").order("created_at"),
+    supabase
+      .from("claims")
+      .select("*, wishes!inner(wishlist_id)")
+      .eq("wishes.wishlist_id", wishlistId)
+      .order("created_at"),
   ]);
   if (wishes.error) throw new Error(wishes.error.message);
   if (claims.error) throw new Error(claims.error.message);
-  return { wishes: wishes.data, claims: claims.data };
+  return { wishlistId, wishes: wishes.data, claims: claims.data };
 }
 
 // Supabase returns { error } instead of throwing; turn it into an exception.
@@ -43,20 +53,23 @@ export default function OwnerPage() {
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  const ownerId = account.kind === "owner" ? account.userId : null;
   const reload = useCallback(
-    () => fetchData().then(setData, (e: Error) => setError(e.message)),
-    [],
+    async () => {
+      if (ownerId) await fetchData(ownerId).then(setData, (e: Error) => setError(e.message));
+    },
+    [ownerId],
   );
 
   useEffect(() => {
-    if (account.kind === "owner") reload();
-  }, [account.kind, reload]);
+    reload();
+  }, [reload]);
 
   if (account.kind === "loading") return null;
   if (account.kind !== "owner") {
     return (
       <p>
-        Only the Owner can see this page.{" "}
+        Only Owners can see this page.{" "}
         <Link href="/login" className="underline">
           Log in
         </Link>
@@ -83,7 +96,12 @@ export default function OwnerPage() {
   return (
     <div className="flex flex-col gap-10 pb-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-5xl font-light">Manage wishlist</h1>
+        <div>
+          <h1 className="text-5xl font-light">Manage wishlist</h1>
+          <Link href={`/wish-list/${account.handle}`} className="text-sm underline hover:opacity-80">
+            View your wish list
+          </Link>
+        </div>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -101,7 +119,12 @@ export default function OwnerPage() {
         <WishForm
           categories={categories}
           submitLabel="Add Wish"
-          onSubmit={(wish) => act(async () => check(await supabase.from("wishes").insert(wish)))}
+          onSubmit={(wish) =>
+            act(async () => {
+              if (!data) throw new Error("Still loading your wish list.");
+              check(await supabase.from("wishes").insert({ ...wish, wishlist_id: data.wishlistId }));
+            })
+          }
         />
       </section>
 

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import WishList from "./WishList";
+import WishlistIndex from "./WishlistIndex";
 
-export const metadata: Metadata = { title: "Wish list" };
+export const metadata: Metadata = { title: "Wish lists" };
 
-export default function WishListPage() {
-  return <WishList />;
+export default function WishListsPage() {
+  return <WishlistIndex />;
 }

@@ -1,15 +1,25 @@
 # Wishlist
 
-The Owner's ongoing list of gifts they'd like, which family members use to coordinate who gets what.
+Family members' ongoing lists of gifts they'd like, which the rest of the family uses to coordinate who gets what.
+
+## Wishlists
+
+**Wishlist**:
+One Owner's list of Wishes, with its own Categories, Personal Message and Received archive. Each Wishlist has exactly one Owner.
+_Avoid_: List, page, account
+
+**Handle**:
+The short, lowercase name that identifies a Wishlist in its link (e.g. `alexander`). Chosen when the Wishlist is created and never changed.
+_Avoid_: Username, slug, ID
 
 ## People
 
 **Owner**:
-The person whose wishlist it is (Alexander). The only one who curates Wishes.
+The person a Wishlist belongs to, and the only one who curates its Wishes. A person owns at most one Wishlist; on anyone else's Wishlist they are a Gifter.
 _Avoid_: Admin, user
 
 **Gifter**:
-A family member who browses the wishlist and claims Wishes.
+A family member who browses Wishlists and claims Wishes. One Gifter account works on every Wishlist except their own.
 _Avoid_: Visitor, user, buyer
 
 **Guest**:
@@ -53,19 +63,19 @@ The state of a Claim where the Gifter has the gift in hand.
 _Avoid_: Purchased, done, fulfilled
 
 **Spoiler Mode**:
-The Owner's choice to see Claims on the Owner page; off by default to keep gifts a surprise. The wishlist itself never shows Claims to the Owner.
+An Owner's choice to see their own Wishlist's Claims on the Owner page; off by default to keep gifts a surprise. An Owner's own Wishlist never shows them its Claims.
 _Avoid_: Admin view, reveal mode
 
 **Spoiler Warning**:
-The notice shown to anyone not logged in, before Claims are shown, letting them continue or go back.
+The notice shown to anyone not logged in, before Claims are shown, letting them continue or go back. Accepting it once covers every Wishlist.
 _Avoid_: Popup, login prompt, gate
 
 ## Presentation
 
 **Theme**:
-The seasonal look of the site: Christmas, Birthday, or Standard in between.
+The seasonal look of the site: Christmas, Birthday, or Standard in between. Birthday follows the Owner of the Wishlist being viewed; Home and About Me follow Alexander's.
 _Avoid_: Skin, style, mode
 
 **Personal Message**:
-A short message from the Owner shown under the wishlist heading, for everyone who visits.
+A short message from the Owner shown under their Wishlist's heading, for everyone who visits.
 _Avoid_: Note (that's on a Wish), intro, bio
