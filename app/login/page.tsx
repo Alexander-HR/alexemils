@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import LinkError from "./LinkError";
 import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = { title: "Log in" };
@@ -10,6 +12,10 @@ export default function Login() {
       <p className="mb-6 opacity-70">
         No account? You can still claim Wishes as a Guest.
       </p>
+      {/* The query string isn't known while prerendering. */}
+      <Suspense>
+        <LinkError />
+      </Suspense>
       <LoginForm />
     </div>
   );
