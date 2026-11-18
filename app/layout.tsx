@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import EmailLinkHandler from "./components/EmailLinkHandler";
 import Navbar from "./components/Navbar";
 import Snow from "./components/Snow";
 import { themeScript } from "./theme";
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Snow />
         <Navbar />
         <main className="mx-auto w-full max-w-5xl px-4 mt-6">{children}</main>
+        <EmailLinkHandler />
         <Analytics />
       </body>
     </html>

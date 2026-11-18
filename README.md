@@ -9,7 +9,7 @@ npm run dev   # http://localhost:3000
 
 ## Supabase setup
 
-Invite and password reset links go to `/auth/confirm`, which needs a one-time code in the link. Supabase's default email templates don't include one, so set these under **Authentication → Emails → Templates**:
+Invite and password reset emails work with Supabase's default templates: the link logs the person in and the site sends them to choose a password (`app/components/EmailLinkHandler.tsx`). Editing the templates needs a custom SMTP provider. If one is ever set up, links of this form are handled by `/auth/confirm`:
 
 - **Invite user**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`
 - **Reset password**: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
