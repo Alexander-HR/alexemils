@@ -6,7 +6,8 @@ import { Suspense } from "react";
 import AccountMenu from "./AccountMenu";
 
 const links = [
-  { href: "/", label: "Home" },
+  // The site's name, so it stands out. The tree only shows during the Christmas Theme.
+  { href: "/", label: "AlexEmils", christmasEmoji: "🎄", prominent: true },
   { href: "/about-me", label: "About Me" },
   { href: "/wish-list", label: "Wish List" },
 ];
@@ -33,7 +34,7 @@ function CurrentNavLinks() {
 function NavLinks({ pathname }: { pathname: string | null }) {
   return (
     <ul className="flex flex-wrap items-center gap-1">
-      {links.map(({ href, label }) => {
+      {links.map(({ href, label, christmasEmoji, prominent }) => {
         // Each Wishlist (/wish-list/{handle}) counts as the Wish List page.
         const current =
           pathname === href || (href !== "/" && !!pathname?.startsWith(`${href}/`));
@@ -43,10 +44,15 @@ function NavLinks({ pathname }: { pathname: string | null }) {
               href={href}
               aria-current={current ? "page" : undefined}
               className={`block rounded px-3 py-1 hover:bg-foreground/10 ${
-                current ? "bg-foreground/15 font-semibold" : ""
-              }`}
+                prominent ? "text-2xl font-semibold" : ""
+              } ${current ? "bg-foreground/15 font-semibold" : ""}`}
             >
               {label}
+              {christmasEmoji && (
+                <span aria-hidden className="ml-1 hidden christmas:inline">
+                  {christmasEmoji}
+                </span>
+              )}
             </Link>
           </li>
         );
